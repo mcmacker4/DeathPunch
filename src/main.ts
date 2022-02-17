@@ -1,6 +1,8 @@
-import { Client, GuildChannel, Intents, Message } from 'discord.js'
+import { Client, Intents, Message } from 'discord.js'
 import { AudioPlayer, createAudioPlayer, createAudioResource, joinVoiceChannel, PlayerSubscription, VoiceConnection } from '@discordjs/voice'
 import { URL } from 'url'
+
+import { resolve } from 'path'
 import * as ytdl from 'ytdl-core'
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] })
@@ -131,16 +133,18 @@ function stopPlaySession(message: Message) {
 client.on('messageCreate', message => {
     const content = message.content.trim()
     console.log(content)
-    if (content.startsWith('?play')) {
-        playInSession(message)
-    } else if (content.startsWith('?stop')) {
-        stopPlaySession(message)
+    try {
+        if (content.startsWith('?play')) {
+            playInSession(message)
+        } else if (content.startsWith('?stop')) {
+            stopPlaySession(message)
+        }
+    } catch (e) {
+        console.error(e)
     }
 })
 
 client.on('ready', async () => console.log("Ready"))
 
-
-client.on('debug', message => console.log(message))
-
-client.login("MzMzMzM4MDE4OTM0OTQ3ODQy.WWE7OA.Cms05vXi_RdnCDr1g5AFFiMTLmk")
+const config = require(resolve(process.cwd(), 'config.json'))
+client.login(config['token'])

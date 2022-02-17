@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "run": "node dist/main.js"
+    "start": "node dist/main.js"
   },
   "dependencies": {
     "@discordjs/voice": "^0.8.0",
