@@ -2,6 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "moduleResolution": "node",
+        "target": "ES2019",
         "strict": true,
         "allowSyntheticDefaultImports": true,
         "outDir": "dist"
