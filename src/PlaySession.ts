@@ -8,7 +8,7 @@ import {
     VoiceConnection,
     VoiceConnectionStatus
 } from "@discordjs/voice"
-import { Guild, TextBasedChannel, TextChannel } from "discord.js"
+import { Guild, TextBasedChannel } from "discord.js"
 import * as ytdl from "ytdl-core"
 import { Readable } from 'stream'
 

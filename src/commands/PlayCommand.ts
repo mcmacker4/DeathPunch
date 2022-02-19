@@ -4,7 +4,6 @@ import { isPlaylistUrl, isVideoUrl } from "../util/validators";
 import { resolvePlaylist } from "../util/playlist";
 import { PlaySession } from "../PlaySession";
 import { PlayService } from "../PlayService";
-import { TextChannel } from "discord.js";
 
 export class PlayCommand extends Command {
 
