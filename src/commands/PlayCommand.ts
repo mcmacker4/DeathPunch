@@ -15,7 +15,7 @@ export class PlayCommand extends Command {
             throw new Error('You are not in a voice channel')
         }
 
-        const url = this.argumens[0]
+        const url = this.args[0]
 
         if (!url) {
             throw new Error('Please specify a URL')

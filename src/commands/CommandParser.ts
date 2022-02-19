@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
 import { Command } from "./Command";
+import { EnqueueCommand } from "./EnqueueCommand";
 import { NextCommand } from "./NextCommand";
 import { PlayCommand } from "./PlayCommand";
 import { StopCommand } from "./StopCommand";
@@ -38,6 +39,8 @@ export class CommandParser {
             return new StopCommand(message, message.guild)
         } else if (name === cmd('next')) {
             return new NextCommand(message, message.guild)
+        } else if (name === cmd('qadd')) {
+            return new EnqueueCommand(message, message.guild, args)
         }
     }
 
