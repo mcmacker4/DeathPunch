@@ -4,6 +4,7 @@ import { isPlaylistUrl, isVideoUrl } from "../util/validators";
 import { resolvePlaylist } from "../util/playlist";
 import { PlaySession } from "../PlaySession";
 import { PlayService } from "../PlayService";
+import { TextChannel } from "discord.js";
 
 export class PlayCommand extends Command {
 
@@ -43,10 +44,15 @@ export class PlayCommand extends Command {
     }
 
     private findOrCreateSession(channelId: string): PlaySession {
-        const session = PlayService.findSession(this.guild.id) ?? PlayService.createSession(this.guild, channelId)
-        if (session.channelId !== channelId)
-            throw new Error('A session is playing in another channel')
-        return session
+        const textChannel = this.message.channel
+        if (textChannel.isText()) {
+            const session = PlayService.findSession(this.guild.id) ?? PlayService.createSession(this.guild, textChannel, channelId)
+            if (session.voiceChannelId !== channelId)
+                throw new Error('A session is playing in another channel')
+            return session
+        } else {
+            throw new Error('Message was not sent in a regular Text Channel')
+        }
     }
 
     private getChannelId(): string | undefined {

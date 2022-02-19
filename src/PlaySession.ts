@@ -8,17 +8,21 @@ import {
     VoiceConnection,
     VoiceConnectionStatus
 } from "@discordjs/voice"
-import { Guild } from "discord.js"
+import { Guild, TextBasedChannel, TextChannel } from "discord.js"
 import * as ytdl from "ytdl-core"
+import { Readable } from 'stream'
 
 export class PlaySession {
 
     private queue: string[] = []
 
+    private currentStream?: Readable
+
     private disconnectCallback?: () => void
 
     private constructor(
-        readonly channelId: string,
+        readonly voiceChannelId: string,
+        private readonly textChannel: TextBasedChannel,
         private readonly connection: VoiceConnection,
         private readonly audioPlayer: AudioPlayer,
         private readonly subscription: PlayerSubscription
@@ -28,14 +32,15 @@ export class PlaySession {
 
     private registerListeners() {
         this.audioPlayer.on('stateChange', (_, state) => {
-            console.log(`${this.channelId} player state changed ${state.status}`)
+            console.log(`${this.voiceChannelId} player state changed ${state.status}`)
             if (state.status === AudioPlayerStatus.Idle) {
+                this.currentStream?.destroy()
                 this.playNext()
             }
         })
 
         this.connection.on('stateChange', (_, state) => {
-            console.log(`${this.channelId} connection state changed ${state.status}`)
+            console.log(`${this.voiceChannelId} connection state changed ${state.status}`)
             if (state.status === VoiceConnectionStatus.Disconnected) {
                 this.disconnectCallback?.call(null)
             }
@@ -47,22 +52,33 @@ export class PlaySession {
     }
 
     playNext() {
-        console.log(`${this.channelId} playing next song.`)
+        console.log(`${this.voiceChannelId} playing next song.`)
         const url = this.queue.shift()
         if (url !== undefined) {
+            this.audioPlayer.stop()
+            this.currentStream?.destroy()
             this.playNow(url)
         }
     }
 
     playNow(url: string) {
-        console.log(`${this.channelId} playing song now`)
-        const stream = ytdl(url)
-        const resource = createAudioResource(stream)
+        console.log(`${this.voiceChannelId} playing song now`)
+
+        ytdl.getInfo(url).then(info => {
+            this.textChannel.send(`Now playing \`${info.videoDetails.title}\``);
+        })
+
+        this.currentStream = ytdl(url, {
+            filter: 'audioonly',
+            highWaterMark: 1 << 25
+        })
+
+        const resource = createAudioResource(this.currentStream)
         this.audioPlayer.play(resource)
     }
 
     destroy() {
-        console.log(`${this.channelId} being destroyed`)
+        console.log(`${this.voiceChannelId} being destroyed`)
         this.audioPlayer.stop()
         this.subscription?.unsubscribe()
         this.connection.destroy()
@@ -72,9 +88,9 @@ export class PlaySession {
         this.disconnectCallback = callback
     }
 
-    static create(guild: Guild, channelId: string) {
+    static create(guild: Guild, textChannel: TextBasedChannel, voiceChannelId: string) {
         const connection = joinVoiceChannel({
-            channelId,
+            channelId: voiceChannelId,
             guildId: guild.id,
             adapterCreator: guild.voiceAdapterCreator,
         })
@@ -86,7 +102,7 @@ export class PlaySession {
             throw new Error("Could not subscribe to audio player.")
         }
 
-        return new PlaySession(channelId, connection, audioPlayer, subscription)
+        return new PlaySession(voiceChannelId, textChannel, connection, audioPlayer, subscription)
     }
 
 }

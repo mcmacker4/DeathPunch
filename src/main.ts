@@ -7,15 +7,13 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 
 client.on('messageCreate', message => {
     console.log(`Message: ${message.content}`)
-    try {
-        const command = CommandParser.parse(message)
-        if (command !== undefined) {
-            command.execute()
-            console.log("Executed:", message.content)
-        }
-    } catch (err: any) {
-        message.reply(err.message)
-        console.error(err)
+    const command = CommandParser.parse(message)
+    if (command !== undefined) {
+        command.execute().catch(err => {
+            message.reply(err.message)
+            console.error(err)
+        })
+        console.log("Executed:", message.content)
     }
 })
 

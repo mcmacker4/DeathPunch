@@ -1,4 +1,4 @@
-import { Guild } from "discord.js";
+import { Guild, TextBasedChannel, TextChannel } from "discord.js";
 import { PlaySession } from "./PlaySession";
 
 
@@ -12,8 +12,8 @@ export class PlayService {
         return this.repository.get(guildId)
     }
 
-    public static createSession(guild: Guild, channelId: string): PlaySession {
-        const session = PlaySession.create(guild, channelId)
+    public static createSession(guild: Guild, textChannel: TextBasedChannel, channelId: string): PlaySession {
+        const session = PlaySession.create(guild, textChannel, channelId)
         this.repository.set(guild.id, session)
 
         session.onDisconnect(() => {
