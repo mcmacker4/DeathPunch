@@ -48,6 +48,7 @@ export class PlaySession {
     }
 
     enqueue(...urls: string[]) {
+        this.textChannel.send(`Added ${urls.length} song${urls.length == 1 ? '' : 's'} to the queue.`)
         this.queue.push(...urls)
     }
 
@@ -79,6 +80,7 @@ export class PlaySession {
 
     destroy() {
         console.log(`${this.voiceChannelId} being destroyed`)
+        this.textChannel.send('Session ended!')
         this.audioPlayer.stop()
         this.subscription?.unsubscribe()
         this.connection.destroy()
