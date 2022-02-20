@@ -12,9 +12,14 @@ import { CommandInteraction, Guild, TextBasedChannel } from "discord.js"
 import * as ytdl from "ytdl-core"
 import { Readable } from 'stream'
 
+export type Song = {
+    title: string
+    url: string
+}
+
 export class PlaySession {
 
-    private queue: string[] = []
+    readonly queue: Song[] = []
 
     private currentStream?: Readable
 
@@ -47,12 +52,12 @@ export class PlaySession {
         })
     }
 
-    enqueue(...urls: string[]) {
-        this.queue.push(...urls)
+    enqueue(...songs: Song[]) {
+        this.queue.push(...songs)
     }
 
-    enqueueFirst(...urls: string[]) {
-        this.queue.unshift(...urls)
+    enqueueFirst(...songs: Song[]) {
+        this.queue.unshift(...songs)
     }
 
     playNext() {
@@ -64,14 +69,12 @@ export class PlaySession {
         }
     }
 
-    playNow(url: string) {
+    playNow(song: Song) {
         console.log(`${this.voiceChannelId} playing song now`)
 
-        ytdl.getInfo(url).then(info => {
-            this.textChannel.send(`Now playing \`${info.videoDetails.title}\``);
-        })
+        this.textChannel.send(`Now playing \`${song.title}\``);
 
-        this.currentStream = ytdl(url, {
+        this.currentStream = ytdl(song.url, {
             filter: 'audioonly',
             highWaterMark: 1 << 25
         })

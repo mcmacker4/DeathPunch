@@ -5,6 +5,7 @@ import { resolvePlaylist } from "../util/playlist";
 import { PlaySession } from "../PlaySession";
 import { PlayService } from "../PlayService";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import * as ytdl from "ytdl-core";
 
 export class PlayCommand extends Command {
 
@@ -37,16 +38,23 @@ export class PlayCommand extends Command {
         if (isPlaylistUrl(url)) {
             try {
                 const playlistInfo = await resolvePlaylist(url)
-                session.enqueueFirst(...playlistInfo.urls)
+                session.enqueueFirst(...playlistInfo.songs)
                 session.playNext()
-                this.interaction.editReply(`Playing ${playlistInfo.urls.length} songs from \`${playlistInfo.title}\``)
+                const count = playlistInfo.songs.length
+                this.interaction.editReply(`Playing ${count} song${count === 1 ? '' : 's'} from \`${playlistInfo.title}\``)
             } catch (err) {
                 console.error(err)
                 throw new Error('An error ocurred resolving the playlist.')
             }
         } else if (isVideoUrl(url)) {
-            session.playNow(url)
-            this.interaction.editReply('Playing song now.')
+            try {
+                const info = await ytdl.getBasicInfo(url)
+                session.playNow({ title: info.videoDetails.title, url })
+                this.interaction.editReply('Playing song now.')
+            } catch (err) {
+                console.error(err)
+                throw new Error('An error ocurred resolving video info')
+            }
         } else {
             throw new Error('Invalid URL')
         }

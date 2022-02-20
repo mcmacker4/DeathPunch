@@ -10,6 +10,7 @@ import { EnqueueCommand } from './EnqueueCommand'
 import { NextCommand } from './NextCommand'
 import { PlayCommand } from './PlayCommand'
 import { StopCommand } from './StopCommand'
+import { ListCommand } from './ListCommand'
 
 
 type CommandFactory = (interaction: CommandInteraction) => Command
@@ -21,6 +22,7 @@ export async function registerCommands() {
         StopCommand.register().toJSON(),
         NextCommand.register().toJSON(),
         EnqueueCommand.register().toJSON(),
+        ListCommand.register().toJSON(),
     ]
 
     await Rest.put(
@@ -34,6 +36,7 @@ export const CommandFactories: Record<string, CommandFactory> = {
     'stop': CommandFactoryFactory(StopCommand),
     'next': CommandFactoryFactory(NextCommand),
     'qadd': CommandFactoryFactory(EnqueueCommand),
+    'list': CommandFactoryFactory(ListCommand),
 }
 
 function CommandFactoryFactory<T extends Command>(Constructor: CommandConstructor<T>): CommandFactory {
