@@ -1,4 +1,4 @@
-import { Guild, TextBasedChannel } from "discord.js";
+import { CommandInteraction, Guild, TextBasedChannel } from "discord.js";
 import { PlaySession } from "./PlaySession";
 
 

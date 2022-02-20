@@ -1,14 +1,13 @@
-import { Guild, Message } from "discord.js";
+import { CommandInteraction, Guild, Interaction, Message } from "discord.js";
 
 
 export abstract class Command {
 
     constructor(
-        readonly message: Message,
+        readonly interaction: CommandInteraction,
         readonly guild: Guild,
-        readonly args: string[] = []
     ) {}
 
     abstract execute(): Promise<void>
-    
+
 }

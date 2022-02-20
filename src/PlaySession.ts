@@ -8,7 +8,7 @@ import {
     VoiceConnection,
     VoiceConnectionStatus
 } from "@discordjs/voice"
-import { Guild, TextBasedChannel } from "discord.js"
+import { CommandInteraction, Guild, TextBasedChannel } from "discord.js"
 import * as ytdl from "ytdl-core"
 import { Readable } from 'stream'
 
@@ -48,12 +48,14 @@ export class PlaySession {
     }
 
     enqueue(...urls: string[]) {
-        this.textChannel.send(`Added ${urls.length} song${urls.length == 1 ? '' : 's'} to the queue.`)
         this.queue.push(...urls)
     }
 
+    enqueueFirst(...urls: string[]) {
+        this.queue.unshift(...urls)
+    }
+
     playNext() {
-        console.log(`${this.voiceChannelId} playing next song.`)
         const url = this.queue.shift()
         if (url !== undefined) {
             this.audioPlayer.stop()
@@ -80,7 +82,6 @@ export class PlaySession {
 
     destroy() {
         console.log(`${this.voiceChannelId} being destroyed`)
-        this.textChannel.send('Session ended!')
         this.audioPlayer.stop()
         this.subscription?.unsubscribe()
         this.connection.destroy()
