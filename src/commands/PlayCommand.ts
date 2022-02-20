@@ -36,10 +36,10 @@ export class PlayCommand extends Command {
 
         if (isPlaylistUrl(url)) {
             try {
-                const allUrls = await resolvePlaylist(url)
-                session.enqueueFirst(...allUrls)
+                const playlistInfo = await resolvePlaylist(url)
+                session.enqueueFirst(...playlistInfo.urls)
                 session.playNext()
-                this.interaction.editReply('Playing playlist now.')
+                this.interaction.editReply(`Playing ${playlistInfo.urls.length} songs from \`${playlistInfo.title}\``)
             } catch (err) {
                 console.error(err)
                 throw new Error('An error ocurred resolving the playlist.')

@@ -34,9 +34,10 @@ export class EnqueueCommand extends Command {
             if (isPlaylistUrl(url)) {
                 console.log(`EnqueueCommand: message is a playlist url`)
                 try {
-                    const allUrls = await resolvePlaylist(url)
-                    session.enqueue(...allUrls)
-                    this.reply(allUrls.length)
+                    const playlistInfo = await resolvePlaylist(url)
+                    const count = playlistInfo.urls.length
+                    session.enqueue(...playlistInfo.urls)
+                    this.interaction.editReply(`Added ${count} song${count === 1 ? '' : 's'} from \`${playlistInfo.title}\``)
                 } catch (err) {
                     console.error(err)
                     throw new Error('An error ocurred resolving the playlist.')
@@ -44,17 +45,13 @@ export class EnqueueCommand extends Command {
             } else if (isVideoUrl(url)) {
                 console.log(`EnqueueCommand: message is a video url`)
                 session.enqueue(url)
-                this.reply(1)
+                await this.interaction.editReply(`Added 1 song to the queue`)
             } else {
                 throw new Error('Invalid URL')
             }
             
         }
 
-    }
-
-    private async reply(count: number) {
-        await this.interaction.editReply(`Added ${count} song${count === 1 ? '' : 's'} to the queue.`)
     }
 
 }
