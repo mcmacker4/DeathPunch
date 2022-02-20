@@ -15,5 +15,8 @@
     "sodium": "^3.0.2",
     "ytdl-core": "^4.10.1",
     "ytpl": "^2.2.3"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5"
   }
 }
