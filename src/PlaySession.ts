@@ -72,7 +72,7 @@ export class PlaySession {
     playNow(song: Song) {
         console.log(`${this.voiceChannelId} playing song now`)
 
-        this.textChannel.send(`Now playing \`${song.title}\``);
+        this.textChannel.send(`Now playing \`${song.title}\``).catch((err) => console.error(err))
 
         this.currentStream = ytdl(song.url, {
             filter: 'audioonly',
