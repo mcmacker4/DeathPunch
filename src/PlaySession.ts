@@ -72,15 +72,24 @@ export class PlaySession {
     playNow(song: Song) {
         console.log(`${this.voiceChannelId} playing song now`)
 
-        this.textChannel.send(`Now playing \`${song.title}\``).catch((err) => console.error(err))
+        try {
 
-        this.currentStream = ytdl(song.url, {
-            filter: 'audioonly',
-            highWaterMark: 1 << 25
-        })
+            this.textChannel.send(`Now playing \`${song.title}\``).catch((err) => console.error(err))
 
-        const resource = createAudioResource(this.currentStream)
-        this.audioPlayer.play(resource)
+            this.currentStream = ytdl(song.url, {
+                filter: 'audioonly',
+                highWaterMark: 1 << 25
+            })
+
+            const resource = createAudioResource(this.currentStream)
+            this.audioPlayer.play(resource)
+
+        } catch (err) {
+            console.error(err)
+            this.textChannel.send('An error ocurred playing the video').catch(err => console.error(err))
+            this.playNext()
+        }
+
     }
 
     destroy() {
