@@ -1,4 +1,4 @@
-import { REST } from "@discordjs/rest";
+import { REST } from "discord.js";
 import { Config } from "./Config";
 
-export const Rest = new REST({ version: '9' }).setToken(Config.token)
+export const Rest = new REST().setToken(Config.token)

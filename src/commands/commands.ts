@@ -1,4 +1,4 @@
-import { CommandInteraction, Guild } from 'discord.js'
+import { ChatInputCommandInteraction, Guild } from 'discord.js'
 import { Routes } from 'discord-api-types/v9'
 
 import { Rest } from '../RestApi'
@@ -13,8 +13,8 @@ import { StopCommand } from './StopCommand'
 import { ListCommand } from './ListCommand'
 
 
-type CommandFactory = (interaction: CommandInteraction) => Command
-type CommandConstructor<T extends Command> = { new(interaction: CommandInteraction, guild: Guild): T }
+type CommandFactory = (interaction: ChatInputCommandInteraction) => Command
+type CommandConstructor<T extends Command> = { new(interaction: ChatInputCommandInteraction, guild: Guild): T }
 
 export async function registerCommands() {
     const commandData = [
@@ -40,7 +40,7 @@ export const CommandFactories: Record<string, CommandFactory> = {
 }
 
 function CommandFactoryFactory<T extends Command>(Constructor: CommandConstructor<T>): CommandFactory {
-    return (interaction: CommandInteraction) => {
+    return (interaction: ChatInputCommandInteraction) => {
         const guild = interaction.guild
         if (guild === null) {
             throw new Error('Command is only available in guilds.')

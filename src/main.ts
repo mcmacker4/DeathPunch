@@ -1,15 +1,16 @@
-import { Client, Intents } from "discord.js"
+import { Client, GatewayIntentBits, Events } from "discord.js"
 
 import { Config } from "./Config"
-import { CommandFactories, registerCommands } from "./commands/commands"
+import { CommandFactories } from "./commands/commands"
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] })
 
-registerCommands().then(() => {
+async function main() {
 
-    client.on('interactionCreate', async interaction => {
+    const client = new Client({ intents: GatewayIntentBits.Guilds | GatewayIntentBits.GuildVoiceStates })
 
-        if (interaction.isCommand()) {
+    client.on(Events.InteractionCreate, async interaction => {
+
+        if (interaction.isChatInputCommand()) {
             await interaction.deferReply()
             try {
                 const factory = CommandFactories[interaction.commandName]
@@ -23,13 +24,10 @@ registerCommands().then(() => {
         }
     })
 
-    client.on('ready', async () => console.log("Ready"))
+    client.on(Events.ClientReady, async () => console.log("Ready"))
 
-    client.login(Config.token)
+    await client.login(Config.token)
 
-}).catch(err => {
-    console.error(err)
+}
 
-    console.log('An error ocurred.')
-    process.exit(1)
-})
+main()

@@ -1,7 +1,6 @@
 import { Command } from "./Command";
 
-import { isPlaylistUrl, isVideoUrl } from "../util/validators";
-import { resolvePlaylist } from "../util/playlist";
+import { isVideoUrl } from "../util/validators";
 import { PlaySession } from "../PlaySession";
 import { PlayService } from "../PlayService";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -35,18 +34,7 @@ export class PlayCommand extends Command {
 
         const session = this.findOrCreateSession(channelId)
 
-        if (isPlaylistUrl(url)) {
-            try {
-                const playlistInfo = await resolvePlaylist(url)
-                session.enqueueFirst(...playlistInfo.songs)
-                session.playNext()
-                const count = playlistInfo.songs.length
-                this.interaction.editReply(`Playing ${count} song${count === 1 ? '' : 's'} from \`${playlistInfo.title}\``)
-            } catch (err) {
-                console.error(err)
-                throw new Error('An error ocurred resolving the playlist.')
-            }
-        } else if (isVideoUrl(url)) {
+        if (isVideoUrl(url)) {
             try {
                 const info = await ytdl.getBasicInfo(url)
                 session.playNow({ title: info.videoDetails.title, url })
@@ -63,7 +51,7 @@ export class PlayCommand extends Command {
 
     private findOrCreateSession(channelId: string): PlaySession {
         const textChannel = this.interaction.channel
-        if (textChannel !== null && textChannel.isText()) {
+        if (textChannel !== null && textChannel.isTextBased()) {
             const session = PlayService.findSession(this.guild.id) ?? PlayService.createSession(this.guild, textChannel, channelId)
             if (session.voiceChannelId !== channelId)
                 throw new Error('A session is playing in another channel')

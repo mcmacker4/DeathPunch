@@ -1,10 +1,10 @@
-import { CommandInteraction, Guild, Interaction, Message } from "discord.js";
+import { ChatInputCommandInteraction, Guild } from "discord.js";
 
 
 export abstract class Command {
 
     constructor(
-        readonly interaction: CommandInteraction,
+        readonly interaction: ChatInputCommandInteraction,
         readonly guild: Guild,
     ) {}
 

@@ -1,8 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import * as ytdl from "ytdl-core";
 import { PlayService } from "../PlayService";
-import { resolvePlaylist } from "../util/playlist";
-import { isPlaylistUrl, isVideoUrl } from "../util/validators";
+import { isVideoUrl } from "../util/validators";
 import { Command } from "./Command";
 
 
@@ -31,19 +30,7 @@ export class EnqueueCommand extends Command {
 
         if (session !== undefined) {
 
-            if (isPlaylistUrl(url)) {
-
-                try {
-                    const playlistInfo = await resolvePlaylist(url)
-                    const count = playlistInfo.songs.length
-                    session.enqueue(...playlistInfo.songs)
-                    this.interaction.editReply(`Added ${count} song${count === 1 ? '' : 's'} from \`${playlistInfo.title}\``)
-                } catch (err) {
-                    console.error(err)
-                    throw new Error('An error ocurred resolving the playlist.')
-                }
-
-            } else if (isVideoUrl(url)) {
+            if (isVideoUrl(url)) {
 
                 try {
                     const info = await ytdl.getBasicInfo(url)
