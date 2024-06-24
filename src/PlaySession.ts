@@ -8,7 +8,7 @@ import {
     VoiceConnection,
     VoiceConnectionStatus
 } from "@discordjs/voice"
-import { CommandInteraction, Guild, TextBasedChannel } from "discord.js"
+import { Guild, TextBasedChannel } from "discord.js"
 import * as ytdl from "ytdl-core"
 import { Readable } from 'stream'
 
@@ -40,7 +40,11 @@ export class PlaySession {
             console.log(`${this.voiceChannelId} player state changed ${state.status}`)
             if (state.status === AudioPlayerStatus.Idle) {
                 this.currentStream?.destroy()
-                this.playNext()
+                if (this.queue.length > 0) {
+                    this.playNext()
+                } else {
+                    this.destroy()
+                }
             }
         })
 
@@ -66,6 +70,8 @@ export class PlaySession {
             this.audioPlayer.stop()
             this.currentStream?.destroy()
             this.playNow(url)
+        } else {
+            throw new Error('No more songs')
         }
     }
 
@@ -90,6 +96,16 @@ export class PlaySession {
             this.playNext()
         }
 
+    }
+
+    pause() {
+        if (!this.audioPlayer.pause(true))
+            throw new Error('Could not pause')
+    }
+
+    unpause() {
+        if (!this.audioPlayer.unpause())
+        throw new Error('Could not unpause')
     }
 
     destroy() {

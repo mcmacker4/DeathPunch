@@ -14,9 +14,8 @@ async function main() {
             await interaction.deferReply()
             try {
                 const factory = CommandFactories[interaction.commandName]
-                if (factory !== undefined) {
+                if (factory !== undefined)
                     await factory(interaction).execute()
-                }
             } catch (err: any) {
                 interaction.editReply('Error: ' + (err?.message ?? 'unknown'))
                 console.error(err.message)
