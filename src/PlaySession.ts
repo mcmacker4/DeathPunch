@@ -11,6 +11,7 @@ import {
 import { Guild, TextBasedChannel } from "discord.js"
 import * as ytdl from "ytdl-core"
 import { Readable } from 'stream'
+import { PlayService } from "./PlayService"
 
 export type Song = {
     title: string
@@ -23,9 +24,8 @@ export class PlaySession {
 
     private currentStream?: Readable
 
-    private disconnectCallback?: () => void
-
     private constructor(
+        readonly guildId: string,
         readonly voiceChannelId: string,
         private readonly textChannel: TextBasedChannel,
         private readonly connection: VoiceConnection,
@@ -43,7 +43,7 @@ export class PlaySession {
                 if (this.queue.length > 0) {
                     this.playNext()
                 } else {
-                    this.destroy()
+                    PlayService.endSession(this.guildId)
                 }
             }
         })
@@ -51,7 +51,7 @@ export class PlaySession {
         this.connection.on('stateChange', (_, state) => {
             console.log(`${this.voiceChannelId} connection state changed ${state.status}`)
             if (state.status === VoiceConnectionStatus.Disconnected) {
-                this.disconnectCallback?.call(null)
+                PlayService.endSession(this.guildId)
             }
         })
     }
@@ -115,10 +115,6 @@ export class PlaySession {
         this.connection.destroy()
     }
 
-    onDisconnect(callback: typeof this.disconnectCallback) {
-        this.disconnectCallback = callback
-    }
-
     static create(guild: Guild, textChannel: TextBasedChannel, voiceChannelId: string) {
         const connection = joinVoiceChannel({
             channelId: voiceChannelId,
@@ -133,7 +129,7 @@ export class PlaySession {
             throw new Error("Could not subscribe to audio player.")
         }
 
-        return new PlaySession(voiceChannelId, textChannel, connection, audioPlayer, subscription)
+        return new PlaySession(guild.id, voiceChannelId, textChannel, connection, audioPlayer, subscription)
     }
 
 }

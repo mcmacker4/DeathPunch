@@ -15,17 +15,13 @@ export class PlayService {
     public static createSession(guild: Guild, textChannel: TextBasedChannel, channelId: string): PlaySession {
         const session = PlaySession.create(guild, textChannel, channelId)
         this.repository.set(guild.id, session)
-
-        session.onDisconnect(() => {
-            this.repository.delete(guild.id)
-        })
-
         return session
     }
 
     public static endSession(guildId: string) {
         const session = this.repository.get(guildId)
         if (session !== undefined) {
+            console.log(`${session.voiceChannelId} Ending session on guild ${guildId}`)
             session.destroy()
             this.repository.delete(guildId)
         }
