@@ -5,7 +5,8 @@
         "target": "ESNext",
         "strict": true,
         "allowSyntheticDefaultImports": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules"

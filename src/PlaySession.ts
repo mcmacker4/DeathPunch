@@ -8,8 +8,8 @@ import {
     VoiceConnection,
     VoiceConnectionStatus
 } from "@discordjs/voice"
-import { Guild, TextBasedChannel } from "discord.js"
-import * as ytdl from "ytdl-core"
+import { Guild, GuildTextBasedChannel, TextBasedChannel } from "discord.js"
+import * as ytdl from "@distube/ytdl-core"
 import { Readable } from 'stream'
 import { PlayService } from "./PlayService"
 
@@ -27,7 +27,7 @@ export class PlaySession {
     private constructor(
         readonly guildId: string,
         readonly voiceChannelId: string,
-        private readonly textChannel: TextBasedChannel,
+        private readonly textChannel: GuildTextBasedChannel,
         private readonly connection: VoiceConnection,
         private readonly audioPlayer: AudioPlayer,
         private readonly subscription: PlayerSubscription
@@ -115,7 +115,7 @@ export class PlaySession {
         this.connection.destroy()
     }
 
-    static create(guild: Guild, textChannel: TextBasedChannel, voiceChannelId: string) {
+    static create(guild: Guild, textChannel: GuildTextBasedChannel, voiceChannelId: string) {
         const connection = joinVoiceChannel({
             channelId: voiceChannelId,
             guildId: guild.id,

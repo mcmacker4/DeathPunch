@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import * as ytdl from "ytdl-core";
+import * as ytdl from "@distube/ytdl-core";
 import { PlayService } from "../PlayService";
 import { isVideoUrl } from "../util/validators";
 import { Command } from "./Command";

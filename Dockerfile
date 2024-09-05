@@ -1,15 +1,16 @@
-FROM node:lts-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /build
 
-COPY package.json ./
-COPY dist ./dist
+COPY package.json tsconfig.json ./
+COPY src ./src
 
 RUN apk add build-base libtool autoconf automake python3
 RUN npm install --verbose
 
+RUN npm run build
 
-FROM node:lts-alpine
+FROM node:22-alpine
 
 WORKDIR /bot
 

@@ -4,7 +4,8 @@ import { isVideoUrl } from "../util/validators";
 import { PlaySession } from "../PlaySession";
 import { PlayService } from "../PlayService";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import * as ytdl from "ytdl-core";
+import * as ytdl from "@distube/ytdl-core";
+import {GuildTextBasedChannel} from "discord.js";
 
 export class PlayCommand extends Command {
 
@@ -50,7 +51,7 @@ export class PlayCommand extends Command {
     }
 
     private findOrCreateSession(channelId: string): PlaySession {
-        const textChannel = this.interaction.channel
+        const textChannel = this.interaction.channel as GuildTextBasedChannel
         if (textChannel !== null && textChannel.isTextBased()) {
             const session = PlayService.findSession(this.guild.id) ?? PlayService.createSession(this.guild, textChannel, channelId)
             if (session.voiceChannelId !== channelId)
